@@ -1,0 +1,2 @@
+# Diablo4
+Basitçe
