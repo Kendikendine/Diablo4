@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #Warn
 #SingleInstance Force
 Persistent
@@ -79,28 +79,19 @@ HepsiniSat(*) {
     myGui.Hide()
     Sleep Random(50, 80)
 
-    ; Sabit başlangıç noktaları
-    baseX := 1220
-    baseY := 840
-    colStep := 60     ; sütunlar arası
-    rowStep := 100    ; satırlar arası
-
-    Loop 3 {  ; satırlar (0, 1, 2)
-        row := A_Index - 1
-        currentY := baseY + row * rowStep
-
-        Loop 11 {  ; sütunlar (0..10)
-            col := A_Index - 1
-            currentX := baseX + col * colStep
-
-            MouseMove currentX, currentY, 15
+    Loop 3 {
+        satır := A_Index
+        Loop 11 {
+            sütun := A_Index
+            pos := GetInvPos(satır, sütun)
+            MouseMove pos.x, pos.y, 15
             Sleep Random(50, 80)
             Click "Right"
             Sleep Random(300, 500)
         }
     }
+
     MouseMove fareX, fareY, 15
-    Sleep Random(50, 80)
     MsgShow("Hepsi Satıldı")
 }
 
@@ -111,6 +102,18 @@ MsgShow(Msg) {
     CoordMode "ToolTip", "Client"
     ToolTip Msg, fareX, fareY
     SetTimer () => ToolTip(), -6000
+}
+
+GetInvPos(satir, sutun) {
+    static baseX   := 1220
+    static baseY   := 840
+    static colStep := 60
+    static rowStep := 100
+
+    x := baseX + (sutun - 1) * colStep
+    y := baseY + (satir - 1) * rowStep
+
+    return {x: x, y: y}
 }
 
 AutoHelper() {
