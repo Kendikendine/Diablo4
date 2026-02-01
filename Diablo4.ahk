@@ -16,8 +16,11 @@ Global DaireVurOnOff := 0
 ; ────────────────────────────────────────────────────────────────
 myGui := Gui("+AlwaysOnTop")
 
-myGui.Add("Checkbox", "x5 y10 w150 h30 vAutoHelperCheck", "Otomatik Yardımcı")
+myGui.Add("Checkbox", "x5 y10 w75 h30 vAutoHelperCheck", "Yardımcı")
     .OnEvent("Click", CheckChanged)
+
+myGui.Add("Button", "x80 y10 w75 h30", "Rezerve")
+    ;.OnEvent("Click", Fonksiyonismi)
 
 myGui.Add("Button", "x5 y40 w75 h30", TikSayisi " sol")
     .OnEvent("Click", SolTik)
@@ -164,6 +167,13 @@ DaireVurToggle() {
     SetTimer DaireVur, 11000
 }
 
+Hapset() {
+    Sleep Random(40, 80)     ; ufak insanileştirme
+    Send "{2 down}"
+    Sleep Random(50, 100)
+    Send "{2 up}"
+}
+
 ; Hotkey'ler
 ; ────────────────────────────────────────────────────────────────
 $XButton1::{
@@ -178,10 +188,29 @@ $ü::{
     return
 }
 
-/*
-~RButton::{
-    Send "{3 down}"
-    KeyWait "RButton"
-    Send "{3 up}"
+~$RButton::
+{
+    if ! myGui["AutoHelperCheck"].Value
+        return     ; checkbox kapalı → makro hiç çalışmasın, normal sağ tık geçsin
+
+    ; buradan sonrası sadece checkbox açıkken çalışır
+    SetTimer Hapset, 0
+    Loop 30
+    {
+        if !GetKeyState("RButton", "P")
+            return
+        Sleep 100
+    }
+    Hapset()
+    SetTimer Hapset, 7000
+    return
 }
-*/
+
+~$RButton up::
+{
+    if !myGui["AutoHelperCheck"].Value
+        return
+
+    SetTimer Hapset, 0
+    return
+}
