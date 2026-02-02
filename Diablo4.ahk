@@ -154,7 +154,10 @@ DaireVur() {
     local bati_x  :=  860, bati_y  := 430
    
     MouseMove kuzey_x, kuzey_y, 35
-    Hapset()  
+   
+    Hapset()
+    AutoHelper()   
+    
     Click "Right Down"
     
       Sleep Random(1500, 2200)
