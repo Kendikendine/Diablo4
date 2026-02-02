@@ -9,7 +9,7 @@ CoordMode "Mouse", "Client"
 Global TikSayisi := 33
 Global fareX := 1040
 Global fareY := 570
-Global DaireVurOnOff := 0
+Global AutoPilotOnOff := 0
 Global LButtonStartTick := 0
 Global OnOffSwitch1 := 0
 
@@ -147,7 +147,7 @@ Korun() {
     Send "1"   ; Kemik Fırtınası
 }
 
-DaireVur() {
+AutoPilot() {
     local kuzey_x := 1040, kuzey_y := 430
     local dogu_x  := 1040, dogu_y  := 570
     local guney_x :=  860, guney_y := 570
@@ -173,20 +173,20 @@ DaireVur() {
     Click "Right Up"
 }
 
-DaireVurToggle() {
-    Global DaireVurOnOff := !DaireVurOnOff
+AutoPilotToggle() {
+    Global AutoPilotOnOff := !AutoPilotOnOff
     myGui["AutoHelperCheck"].Value := 0
     SetTimer Korun, 0
     
-    if (DaireVurOnOff = 0) {
-        SetTimer DaireVur, 0
-        MsgShow("DaireVurKapalı")
+    if (AutoPilotOnOff = 0) {
+        SetTimer AutoPilot, 0
+        MsgShow("AutoPilotKapalı")
         return
     }
     
-    MsgShow("DaireVurAçık")
-    DaireVur()
-    SetTimer DaireVur, 11000
+    MsgShow("AutoPilotAçık")
+    AutoPilot()
+    SetTimer AutoPilot, 11000
 }
 
 Hapset() {
@@ -205,7 +205,7 @@ $XButton1::{
 }
 
 $ü::{
-    DaireVurToggle()
+    AutoPilotToggle()
     return
 }
 
