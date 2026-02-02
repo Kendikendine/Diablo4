@@ -11,6 +11,7 @@ Global TikSayisi := 33
 Global fareX := 1040
 Global fareY := 570
 Global DaireVurOnOff := 0
+Global LButtonStartTick := 0
 
 ; GUI Oluşturma
 ; ────────────────────────────────────────────────────────────────
@@ -221,16 +222,29 @@ $ü::{
     return
 }
 
-~$LButton up::
-{
+~$LButton::{
     if ! myGui["AutoHelperCheck"].Value
-        return          ; checkbox kapalı → normal sol bırakma, makro yok
+        return
+global LButtonStartTick
+    LButtonStartTick := A_TickCount
+    return
+}
 
-    ; buradan sonrası sadece checkbox açıkken çalışır
-    Click "Left"
-    Sleep Random(40, 80)
-    Click "Right Down"     ; sağ tuşu basılı tut
-    Sleep 1500             ; 1.5 saniye
-    Click "Right Up"       ; bırak
+~$LButton up::{
+    if ! myGui["AutoHelperCheck"].Value
+        return
+global LButtonStartTick
+    held_ms := A_TickCount - LButtonStartTick
+
+    if (held_ms >= 1000)
+    {
+        Click "Left"
+        Sleep Random(40, 80)
+        Click "Right Down"
+        Sleep 1500
+        Click "Right Up"
+    }
+    LButtonStartTick := 0
+
     return
 }
