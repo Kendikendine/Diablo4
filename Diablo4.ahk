@@ -2,8 +2,7 @@
 #Warn
 #SingleInstance Force
 Persistent
-
-CoordMode "Mouse", "Client"   ; Koordinatların pencereye göre olduğunu belirtir
+CoordMode "Mouse", "Client"
 
 ; Global Değişkenler
 ; ────────────────────────────────────────────────────────────────
@@ -77,7 +76,7 @@ CheckChanged(*) {
 
         MsgShow("Otomatik Yardımcı Açık")
         AutoHelper()
-        SetTimer AutoHelper, 10000
+        SetTimer AutoHelper, 11000
     } else {
         MsgShow("Otomatik Yardımcı Kapalı")
         SetTimer AutoHelper, 0
@@ -142,9 +141,9 @@ GetInvPos(satir, sutun) {
 }
 
 AutoHelper() {
-    Sleep Random(500, 800)
+    Sleep Random(50, 80)
     Send "3"   ; Ceset Patlaması
-    Sleep Random(1000, 1200)
+    Sleep Random(50, 80)
     Send "1"   ; Kemik Fırtınası
 }
 
@@ -155,22 +154,18 @@ DaireVur() {
     local bati_x  :=  860, bati_y  := 430
    
     MouseMove kuzey_x, kuzey_y, 35
-    Sleep Random(500, 800)
-    Send "2"   ; Kemik Hapisane
-    Sleep Random(300, 500)
+    Hapset()  
     Click "Right Down"
     
-    MouseMove dogu_x, dogu_y, 15
-    Sleep Random(1500, 2200)
-    
-    MouseMove guney_x, guney_y, 15
-    Sleep Random(1500, 2200)
-    
-    MouseMove bati_x, bati_y, 15
-    Sleep Random(1500, 2200)
-    
-    MouseMove kuzey_x, kuzey_y, 15
-    Sleep Random(1500, 2200)
+      Sleep Random(1500, 2200)
+      MouseMove dogu_x, dogu_y, 15
+      Sleep Random(1500, 2200)
+      MouseMove guney_x, guney_y, 15
+      Sleep Random(1500, 2200)
+      MouseMove bati_x, bati_y, 15
+      Sleep Random(1500, 2200)
+      MouseMove kuzey_x, kuzey_y, 15
+      Sleep Random(1500, 2200)
     
     Click "Right Up"
 }
@@ -192,10 +187,9 @@ DaireVurToggle() {
 }
 
 Hapset() {
-    Sleep Random(50, 80)     ; ufak insanileştirme
-    Send "{2 down}"
     Sleep Random(50, 80)
-    Send "{2 up}"
+    Send "2"   ; Kemik Hapisane
+    Sleep Random(50, 80)
 }
 
 ; Hotkey'ler
@@ -263,3 +257,5 @@ global LButtonStartTick
 
     return
 }
+}
+
