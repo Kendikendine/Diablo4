@@ -59,7 +59,11 @@ SagTik(*) {
         Click "Right"
         Sleep Random(300, 500)
     }
+   
     MsgShow(TikSayisi " sağ tık tamamlandı")
+    MouseMove 1170, 770, 15
+    Sleep Random(50, 80)
+    Click "Left"
 }
 
 CheckChanged(*) {
@@ -155,6 +159,8 @@ DaireVur() {
 
 DaireVurToggle() {
     Global DaireVurOnOff := !DaireVurOnOff
+    myGui["AutoHelperCheck"].Value := 0
+    SetTimer AutoHelper, 0
     
     if (DaireVurOnOff = 0) {
         SetTimer DaireVur, 0
@@ -212,5 +218,19 @@ $ü::{
         return
 
     SetTimer Hapset, 0
+    return
+}
+
+~$LButton up::
+{
+    if ! myGui["AutoHelperCheck"].Value
+        return          ; checkbox kapalı → normal sol bırakma, makro yok
+
+    ; buradan sonrası sadece checkbox açıkken çalışır
+    Click "Left"
+    Sleep Random(40, 80)
+    Click "Right Down"     ; sağ tuşu basılı tut
+    Sleep 1500             ; 1.5 saniye
+    Click "Right Up"       ; bırak
     return
 }
