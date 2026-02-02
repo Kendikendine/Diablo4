@@ -12,16 +12,17 @@ Global fareX := 1040
 Global fareY := 570
 Global DaireVurOnOff := 0
 Global LButtonStartTick := 0
+Global OnOffSwitch1 := 0
 
 ; GUI Oluşturma
 ; ────────────────────────────────────────────────────────────────
-myGui := Gui("+AlwaysOnTop")
+myGui := Gui("+ToolWindow +AlwaysOnTop")
 
 myGui.Add("Checkbox", "x5 y10 w75 h30 vAutoHelperCheck", "Yardımcı")
     .OnEvent("Click", CheckChanged)
 
-myGui.Add("Button", "x80 y10 w75 h30", "Rezerve")
-    ;.OnEvent("Click", Fonksiyonismi)
+myGui.Add("Button", "x80 y10 w75 h30 vOnOffBtn1", "Off")
+    .OnEvent("Click", OnOffBtn1Toggle)
 
 myGui.Add("Button", "x5 y40 w75 h30", TikSayisi " sol")
     .OnEvent("Click", SolTik)
@@ -103,6 +104,22 @@ HepsiniSat(*) {
     MsgShow("Hepsi Satıldı")
 }
 
+OnOffBtn1Toggle(*) {
+    global OnOffSwitch1
+    OnOffSwitch1 := !OnOffSwitch1
+    
+    if OnOffSwitch1 {
+        myGui["OnOffBtn1"].Text := "On"
+        Sleep Random(50, 80)
+        ;Buraya On iken çalışacak kodu yaz
+    } else {
+        myGui["OnOffBtn1"].Text := "Off"
+    Sleep Random(50, 80)
+    ;Buraya Off iken çalışacak kodu yaz
+    }
+    
+  ;Buraya 2 durumdada tıkladıktan sonre yapılacak işleri koy
+}
 ; Fonksiyonlar
 ; ────────────────────────────────────────────────────────────────
 
