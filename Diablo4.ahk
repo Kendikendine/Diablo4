@@ -195,8 +195,7 @@ $ü::{
     return
 }
 
-~$RButton::
-{
+~$RButton::{
     if ! myGui["AutoHelperCheck"].Value
         return     ; checkbox kapalı → makro hiç çalışmasın, normal sağ tık geçsin
 
@@ -213,8 +212,7 @@ $ü::{
     return
 }
 
-~$RButton up::
-{
+~$RButton up::{
     if !myGui["AutoHelperCheck"].Value
         return
 
