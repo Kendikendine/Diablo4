@@ -257,5 +257,3 @@ global LButtonStartTick
 
     return
 }
-}
-
