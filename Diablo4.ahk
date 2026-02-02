@@ -72,7 +72,7 @@ CheckChanged(*) {
 
     if myGui["AutoHelperCheck"].Value {
         MouseMove fareX, fareY, 15
-        Sleep Random(80, 150)
+        Sleep Random(50, 80)
 
         MsgShow("Otomatik Yardımcı Açık")
         AutoHelper()
@@ -175,9 +175,9 @@ DaireVurToggle() {
 }
 
 Hapset() {
-    Sleep Random(40, 80)     ; ufak insanileştirme
+    Sleep Random(50, 80)     ; ufak insanileştirme
     Send "{2 down}"
-    Sleep Random(50, 100)
+    Sleep Random(50, 80)
     Send "{2 up}"
 }
 
@@ -239,7 +239,7 @@ global LButtonStartTick
     if (held_ms >= 1000)
     {
         Click "Left"
-        Sleep Random(40, 80)
+        Sleep Random(50, 80)
         Click "Right Down"
         Sleep 1500
         Click "Right Up"
