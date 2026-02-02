@@ -75,11 +75,11 @@ CheckChanged(*) {
         Sleep Random(50, 80)
 
         MsgShow("Otomatik Yardımcı Açık")
-        AutoHelper()
-        SetTimer AutoHelper, 11000
+        Korun()
+        SetTimer Korun, 11000
     } else {
         MsgShow("Otomatik Yardımcı Kapalı")
-        SetTimer AutoHelper, 0
+        SetTimer Korun, 0
     }
 }
 
@@ -140,7 +140,7 @@ GetInvPos(satir, sutun) {
     return {x: x, y: y}
 }
 
-AutoHelper() {
+Korun() {
     Sleep Random(50, 80)
     Send "3"   ; Ceset Patlaması
     Sleep Random(50, 80)
@@ -156,7 +156,7 @@ DaireVur() {
     MouseMove kuzey_x, kuzey_y, 35
    
     Hapset()
-    AutoHelper()   
+    Korun()   
     
     Click "Right Down"
     
@@ -176,7 +176,7 @@ DaireVur() {
 DaireVurToggle() {
     Global DaireVurOnOff := !DaireVurOnOff
     myGui["AutoHelperCheck"].Value := 0
-    SetTimer AutoHelper, 0
+    SetTimer Korun, 0
     
     if (DaireVurOnOff = 0) {
         SetTimer DaireVur, 0
