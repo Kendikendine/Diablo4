@@ -188,8 +188,8 @@ AutoPilotToggle() {
     }
     
     MsgShow("AutoPilotAçık")
-    AutoPilot()
     SetTimer AutoPilot, 11000
+    AutoPilot()
 }
 
 Hapset() {
@@ -263,3 +263,4 @@ global LButtonStartTick
 
     return
 }
+
