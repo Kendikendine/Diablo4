@@ -17,7 +17,7 @@ Global OnOffSwitch1 := 0
 ; ────────────────────────────────────────────────────────────────
 myGui := Gui("+ToolWindow +AlwaysOnTop")
 
-myGui.Add("Checkbox", "x5 y10 w75 h30 vAutoHelperCheck", "Yardımcı")
+myGui.Add("Checkbox", "x5 y10 w75 h30 vClickHelper", "Click Helper")
     .OnEvent("Click", CheckChanged)
 
 myGui.Add("Button", "x80 y10 w75 h30 vOnOffBtn1", "Off")
@@ -37,13 +37,27 @@ myGui.OnEvent("Close", (*) => myGui.Hide())
 ; myGui fonksiyonları
 ; ────────────────────────────────────────────────────────────────
 
-SolTik(*) {
+CheckChanged(*) {
     myGui.Hide()
-    Sleep Random(50, 80)
     MouseMove fareX, fareY, 15
     Sleep Random(50, 80)
 
-    Loop TikSayisi {
+    if myGui["ClickHelper"].Value {
+       MsgShow("Tıklama Yardımcıları Açık")
+    } 
+    else { 
+      MsgShow("Tıklama Yardımcıları Kapalı")
+    }
+}
+
+
+
+SolTik(*) {
+    myGui.Hide()
+    MouseMove fareX, fareY, 15
+    Sleep Random(50, 80)
+    
+     Loop TikSayisi {
         Click "Left"
         Sleep Random(300, 500)
     }
@@ -52,7 +66,6 @@ SolTik(*) {
 
 SagTik(*) {
     myGui.Hide()
-    Sleep Random(50, 80)
     MouseMove fareX, fareY, 15
     Sleep Random(50, 80)
 
@@ -65,22 +78,6 @@ SagTik(*) {
     MouseMove 1170, 770, 15
     Sleep Random(50, 80)
     Click "Left"
-}
-
-CheckChanged(*) {
-    myGui.Hide()
-
-    if myGui["AutoHelperCheck"].Value {
-        MouseMove fareX, fareY, 15
-        Sleep Random(50, 80)
-
-        MsgShow("Otomatik Yardımcı Açık")
-        Korun()
-        SetTimer Korun, 11000
-    } else {
-        MsgShow("Otomatik Yardımcı Kapalı")
-        SetTimer Korun, 0
-    }
 }
 
 HepsiniSat(*) {
@@ -106,15 +103,20 @@ HepsiniSat(*) {
 OnOffBtn1Toggle(*) {
     global OnOffSwitch1
     OnOffSwitch1 := !OnOffSwitch1
+    myGui.Hide()
+    MouseMove fareX, fareY, 15
+    Sleep Random(50, 80)
     
     if OnOffSwitch1 {
         myGui["OnOffBtn1"].Text := "On"
-        Sleep Random(50, 80)
-        ;Buraya On iken çalışacak kodu yaz
-    } else {
+        MsgShow("Otomatik Yardımcı Açık")
+        Korun()
+        SetTimer Korun, 11000
+    } 
+    else {
         myGui["OnOffBtn1"].Text := "Off"
-    Sleep Random(50, 80)
-    ;Buraya Off iken çalışacak kodu yaz
+        MsgShow("Otomatik Yardımcı Kapalı")
+        SetTimer Korun, 0
     }
     
   ;Buraya 2 durumdada tıkladıktan sonre yapılacak işleri koy
@@ -175,7 +177,8 @@ AutoPilot() {
 
 AutoPilotToggle() {
     Global AutoPilotOnOff := !AutoPilotOnOff
-    myGui["AutoHelperCheck"].Value := 0
+    global OnOffSwitch1 := 0
+    myGui["OnOffBtn1"].Text := "Off"
     SetTimer Korun, 0
     
     if (AutoPilotOnOff = 0) {
@@ -210,7 +213,7 @@ $ü::{
 }
 
 ~$RButton::{
-    if ! myGui["AutoHelperCheck"].Value
+    if ! myGui["ClickHelper"].Value
         return     ; checkbox kapalı → makro hiç çalışmasın, normal sağ tık geçsin
 
     ; buradan sonrası sadece checkbox açıkken çalışır
@@ -227,7 +230,7 @@ $ü::{
 }
 
 ~$RButton up::{
-    if !myGui["AutoHelperCheck"].Value
+    if !myGui["ClickHelper"].Value
         return
 
     SetTimer Hapset, 0
@@ -235,7 +238,7 @@ $ü::{
 }
 
 ~$LButton::{
-    if ! myGui["AutoHelperCheck"].Value
+    if ! myGui["ClickHelper"].Value
         return
 global LButtonStartTick
     LButtonStartTick := A_TickCount
@@ -243,7 +246,7 @@ global LButtonStartTick
 }
 
 ~$LButton up::{
-    if ! myGui["AutoHelperCheck"].Value
+    if ! myGui["ClickHelper"].Value
         return
 global LButtonStartTick
     held_ms := A_TickCount - LButtonStartTick
