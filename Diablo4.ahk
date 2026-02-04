@@ -4,14 +4,14 @@
 Persistent
 CoordMode "Mouse", "Client"
 
-; Global Değişkenler
+; global Değişkenler
 ; ────────────────────────────────────────────────────────────────
-Global TikSayisi := 33
-Global fareX := 1040
-Global fareY := 570
-Global AutoPilotOnOff := 0
-Global LButtonStartTick := 0
-Global OnOffSwitch1 := 0
+TikSayisi := 33
+fareX := 1040
+fareY := 570
+AutoPilotOnOff := 0
+LButtonStartTick := 0
+OnOffSwitch1 := 0
 
 ; GUI Oluşturma
 ; ────────────────────────────────────────────────────────────────
@@ -36,7 +36,6 @@ myGui.OnEvent("Close", (*) => myGui.Hide())
 
 ; myGui fonksiyonları
 ; ────────────────────────────────────────────────────────────────
-
 CheckChanged(*) {
     myGui.Hide()
     MouseMove fareX, fareY, 15
@@ -49,8 +48,6 @@ CheckChanged(*) {
       MsgShow("Tıklama Yardımcıları Kapalı")
     }
 }
-
-
 
 SolTik(*) {
     myGui.Hide()
@@ -69,7 +66,7 @@ SagTik(*) {
     MouseMove fareX, fareY, 15
     Sleep Random(50, 80)
 
-    Loop TikSayisi {
+     Loop TikSayisi {
         Click "Right"
         Sleep Random(300, 500)
     }
@@ -101,8 +98,7 @@ HepsiniSat(*) {
 }
 
 OnOffBtn1Toggle(*) {
-    global OnOffSwitch1
-    OnOffSwitch1 := !OnOffSwitch1
+   global OnOffSwitch1 := !OnOffSwitch1
     myGui.Hide()
     MouseMove fareX, fareY, 15
     Sleep Random(50, 80)
@@ -118,8 +114,6 @@ OnOffBtn1Toggle(*) {
         MsgShow("Otomatik Yardımcı Kapalı")
         SetTimer Korun, 0
     }
-    
-  ;Buraya 2 durumdada tıkladıktan sonre yapılacak işleri koy
 }
 ; Fonksiyonlar
 ; ────────────────────────────────────────────────────────────────
@@ -142,41 +136,8 @@ GetInvPos(satir, sutun) {
     return {x: x, y: y}
 }
 
-Korun() {
-    Sleep Random(50, 80)
-    Send "3"   ; Ceset Patlaması
-    Sleep Random(50, 80)
-    Send "1"   ; Kemik Fırtınası
-}
-
-AutoPilot() {
-    local kuzey_x := 1040, kuzey_y := 430
-    local dogu_x  := 1040, dogu_y  := 570
-    local guney_x :=  860, guney_y := 570
-    local bati_x  :=  860, bati_y  := 430
-   
-    MouseMove kuzey_x, kuzey_y, 35
-   
-    Hapset()
-    Korun()   
-    
-    Click "Right Down"
-    
-      Sleep Random(1500, 2200)
-      MouseMove dogu_x, dogu_y, 15
-      Sleep Random(1500, 2200)
-      MouseMove guney_x, guney_y, 15
-      Sleep Random(1500, 2200)
-      MouseMove bati_x, bati_y, 15
-      Sleep Random(1500, 2200)
-      MouseMove kuzey_x, kuzey_y, 15
-      Sleep Random(1500, 2200)
-    
-    Click "Right Up"
-}
-
 AutoPilotToggle() {
-    Global AutoPilotOnOff := !AutoPilotOnOff
+    global AutoPilotOnOff := !AutoPilotOnOff
     global OnOffSwitch1 := 0
     myGui["OnOffBtn1"].Text := "Off"
     SetTimer Korun, 0
@@ -192,10 +153,42 @@ AutoPilotToggle() {
     AutoPilot()
 }
 
+AutoPilot() {
+    Hapset()
+    Korun()   
+    DortYonVur()   
+}
+
 Hapset() {
     Sleep Random(50, 80)
     Send "2"   ; Kemik Hapisane
+}
+
+Korun() {
     Sleep Random(50, 80)
+    Send "3"   ; Ceset Patlaması
+    Sleep Random(50, 80)
+    Send "1"   ; Kemik Fırtınası
+}
+
+DortYonVur() {
+    static kuzey_x := 1040, kuzey_y := 430
+    static dogu_x  := 1040, dogu_y  := 570
+    static guney_x :=  860, guney_y := 570
+    static bati_x  :=  860, bati_y  := 430
+    Sleep Random(50, 80)
+    MouseMove kuzey_x, kuzey_y, 35
+    Click "Right Down"
+      Sleep Random(1500, 2200)
+      MouseMove dogu_x, dogu_y, 15
+      Sleep Random(1500, 2200)
+      MouseMove guney_x, guney_y, 15
+      Sleep Random(1500, 2200)
+      MouseMove bati_x, bati_y, 15
+      Sleep Random(1500, 2200)
+      MouseMove kuzey_x, kuzey_y, 15
+      Sleep Random(1500, 2200)
+    Click "Right Up"
 }
 
 ; Hotkey'ler
@@ -203,8 +196,8 @@ Hapset() {
 $XButton1::{
     MouseGetPos &X, &Y
     myGui.Show "x" X " y" Y
-    Global fareX := X
-    Global fareY := Y
+    global fareX := X
+    global fareY := Y
 }
 
 $ü::{
@@ -240,15 +233,15 @@ $ü::{
 ~$LButton::{
     if ! myGui["ClickHelper"].Value
         return
-global LButtonStartTick
-    LButtonStartTick := A_TickCount
+
+   global LButtonStartTick := A_TickCount
     return
 }
 
 ~$LButton up::{
     if ! myGui["ClickHelper"].Value
         return
-global LButtonStartTick
+
     held_ms := A_TickCount - LButtonStartTick
 
     if (held_ms >= 1000)
@@ -259,8 +252,7 @@ global LButtonStartTick
         Sleep 1500
         Click "Right Up"
     }
-    LButtonStartTick := 0
+   global LButtonStartTick := 0
 
     return
 }
-
