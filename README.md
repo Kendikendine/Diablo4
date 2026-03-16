@@ -1,2 +1,3 @@
 # Diablo4
-Basitçe
+Karakterler buildleri için yardımcı programlar yazdıkça burada biriktireceğim
+
