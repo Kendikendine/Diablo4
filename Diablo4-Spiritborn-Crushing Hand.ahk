@@ -1,7 +1,7 @@
 ;Spiritborn, Crushing Hand
 #Requires AutoHotkey v2.0
 A_ScriptWarningTimeout := -1
-#Warn
+;#Warn
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 KeyHistory 0
@@ -14,7 +14,6 @@ CoordMode "Pixel", "Client"
 
 ; global Değişkenler
 ; ────────────────────────────────────────────────────────────────
-TikSayisi := 33
 fareX := 1040
 fareY := 570
 OnOffAutoKill := 0
@@ -30,11 +29,11 @@ myGui.Add("Checkbox", "x5 y10 w90 h30 vClickHelper", "Click Helper")
 myGui.Add("Button", "x95 y10 w90 h30 vOnOffBtn1", "Gizle")
     .OnEvent("Click", OnOffBtn1Toggle)
 
-myGui.Add("Button", "x5 y40 w90 h30", TikSayisi " sol")
-    .OnEvent("Click", SolTik)
+myGui.Add("Button", "x5 y40 w90 h30", "İksir İç")
+    .OnEvent("Click", iksiric)
 
-myGui.Add("Button", "x95 y40 w90 h30", TikSayisi " sağ")
-    .OnEvent("Click", SagTik)
+myGui.Add("Button", "x95 y40 w90 h30","İtem Al")
+    .OnEvent("Click", itemal)
 
 myGui.Add("Button", "x5 y70 w180 h30", "Tümünü Sat")
     .OnEvent("Click", HepsiniSat)
@@ -58,29 +57,37 @@ CheckChanged(*) {
     }
 }
 
-SolTik(*) {
+iksiric(*) {
     myGui.Hide()
-    MouseMove fareX, fareY, 15
     Sleep Random(50, 80)
-    
-     Loop TikSayisi {
-        Click "Left"
-        Sleep Random(300, 500)
-    }
-    MsgShow(TikSayisi " sol tık tamamlandı")
+    Send "{ı}"
+    Sleep Random(200, 300)
+    Send "{Click 1790 770}"
+
+Loop 4 {
+            satır := 1
+            sütun := A_Index
+            pos := GetInvPos(satır, sütun)
+            MouseMove pos.x, pos.y, 15
+            Sleep Random(50, 80)
+            Click "Right"
+            Sleep Random(500, 600)
+            MsgShow("İksirler içildi.")
+        }
+
 }
-
-SagTik(*) {
+    
+itemal(*) {
     myGui.Hide()
     MouseMove fareX, fareY, 15
     Sleep Random(50, 80)
 
-     Loop TikSayisi {
+     Loop 33 {
         Click "Right"
         Sleep Random(300, 500)
     }
    
-    MsgShow(TikSayisi " sağ tık tamamlandı")
+    MsgShow("İtemler alındı.")
     MouseMove 1170, 770, 15
     Sleep Random(50, 80)
     Click "Left"
