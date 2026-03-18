@@ -1,5 +1,6 @@
-﻿;Spiritborn, Crushing Hand
+;Spiritborn, Crushing Hand
 #Requires AutoHotkey v2.0
+A_ScriptWarningTimeout := -1
 #Warn
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
@@ -26,7 +27,7 @@ myGui.SetFont("s10", "Segoe UI")
 myGui.Add("Checkbox", "x5 y10 w90 h30 vClickHelper", "Click Helper")
     .OnEvent("Click", CheckChanged)
 
-myGui.Add("Button", "x95 y10 w90 h30 vOnOffBtn1", "Off")
+myGui.Add("Button", "x95 y10 w90 h30 vOnOffBtn1", "Gizle")
     .OnEvent("Click", OnOffBtn1Toggle)
 
 myGui.Add("Button", "x5 y40 w90 h30", TikSayisi " sol")
@@ -52,6 +53,7 @@ CheckChanged(*) {
     } 
     else { 
       SetTimer AutoKill, 0
+      SetTimer AutoClickWhileHeld, 0
       MsgShow("Tıklama Yardımcıları Kapalı")
     }
 }
@@ -153,6 +155,16 @@ AutoKill() {
     Send "{LShift up}"
 }
 
+AutoClickWhileHeld(){
+        Click "Left"
+        Send "{LButton down}"
+}
+
+Clickikapa(){
+        SetTimer AutoClickWhileHeld, 0
+        SetTimer Clickikapa, 0
+}
+
 ; Hotkey'ler
 ; ────────────────────────────────────────────────────────────────
 $XButton1::{
@@ -178,7 +190,21 @@ if ! KeyWait("LButton", "T2")
    return
 }
 
-*RButton::{
+~$LButton::{
+    if ! myGui["ClickHelper"].Value
+        return
+    SetTimer AutoClickWhileHeld, Random(450, 550)
+    SetTimer Clickikapa, 7000
+}
+
+~$LButton up::{
+    if ! myGui["ClickHelper"].Value
+        return
+    SetTimer AutoClickWhileHeld, 0 
+    SetTimer Clickikapa, 0
+}
+
+RButton::{
     if ! myGui["ClickHelper"].Value
     {
         Send "{RButton down}"
