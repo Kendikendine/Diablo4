@@ -72,9 +72,10 @@ Loop 4 {
             Sleep Random(50, 80)
             Click "Right"
             Sleep Random(500, 600)
+            
         }
-            Send "{Click 1899 80}"
-            MsgShow("İksirler içildi.")
+        Send "{Click 1899 80}"
+        MsgShow("İksirler içildi.")
 }
     
 itemal(*) {
@@ -231,22 +232,28 @@ RButton::{
         SetTimer AutoKill, 9000
 	Sleep 100
         AutoKill()
-    }
+}
 
 ~$4::{
     if ! myGui["ClickHelper"].Value
         return    
         MsgShow("AutoKill kapalı") 
         SetTimer AutoKill, 0
-    }
+}
 
 ~$WheelUp::{
     if ! myGui["ClickHelper"].Value
+        {
+       Sleep Random(50, 80)
         return
+        }
         Korun()
 }
 ~$WheelDown::{
     if ! myGui["ClickHelper"].Value
+        {
+       Sleep Random(50, 80)
         return
+        }
         Korun()
 }
