@@ -194,7 +194,6 @@ if ! KeyWait("LButton", "T2")
     { 
     GorilZehir()
     }
-   return
 }
 
 ~$LButton::{
