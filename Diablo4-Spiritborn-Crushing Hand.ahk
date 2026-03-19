@@ -72,9 +72,9 @@ Loop 4 {
             Sleep Random(50, 80)
             Click "Right"
             Sleep Random(500, 600)
-            MsgShow("İksirler içildi.")
         }
-
+            Send "{Click 1899 80}"
+            MsgShow("İksirler içildi.")
 }
     
 itemal(*) {
