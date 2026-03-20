@@ -20,14 +20,13 @@ OnOffAutoKill := 0
 
 ; GUI Oluşturma
 ; ────────────────────────────────────────────────────────────────
-myGui := Gui("+ToolWindow +AlwaysOnTop")
+myGui := Gui("+ToolWindow +AlwaysOnTop", "Diablo4 Yardımcısı")
 myGui.SetFont("s10", "Segoe UI")
 
 myGui.Add("Checkbox", "x5 y10 w90 h30 vClickHelper", "Click Helper")
     .OnEvent("Click", CheckChanged)
 
-myGui.Add("Button", "x95 y10 w90 h30 vOnOffBtn1", "Gizle")
-    .OnEvent("Click", OnOffBtn1Toggle)
+myGui.Add("Button", "x95 y10 w90 h30", "Gizle").OnEvent("Click", (*) => myGui.Hide())
 
 myGui.Add("Button", "x5 y40 w90 h30", "İksir İç")
     .OnEvent("Click", iksiric)
@@ -40,8 +39,29 @@ myGui.Add("Button", "x5 y70 w180 h30", "Tümünü Sat")
 
 myGui.OnEvent("Close", (*) => ExitApp())
 
+myGuiinfo1 := Gui("+ToolWindow +AlwaysOnTop", "İtemlerin Düştüğü Yerler")
+myGuiinfo1.SetFont("s10", "Segoe UI")
+myGuiinfo1.Add("Text",, "Yargı Tarlaları in patronu mührü: (Urivar) Yüzük ve kolluk`n"
+               . "Tövbekar Salonu in patronu mührü: (Grigorie) : Yüzük ve kolluk`n"
+               . "Buzul çatlak in patronu mührü: (Buzdaki canavar): Kafalık`n"
+               . "Kadimimn mevkisi in patronu mührü (Lort Zir): Pantolon ve ayakkabı`n"
+               . "Açık buz yarığı in patronu mührü: (Duriel): Silah`n"
+               . "Asılı adamın salonu in patronu mührü(Andariel): Pantolon (Tibault's Will)`n"
+               . "Müjdecinin ini in patronu mührü (nefret müjdecisi) :silah")
+
+; ────────────────────────────────────────────────────────────────
+; Menü Oluşturma
+; ────────────────────────────────────────────────────────────────
+mymenuBar := MenuBar()
+infoMenu := Menu()
+infoMenu.Add("İtemler", (*) => (myGui.Hide(), myGuiinfo1.Show("x" fareX " y" fareY) ))
+infoMenu.Add("Crushing Hand", (*) => (myGui.Hide(), Run("https://maxroll.gg/d4/build-guides/crushing-hand-spiritborn-guide")))
+mymenuBar.Add("Bilgi", infoMenu)
+myGui.MenuBar := mymenuBar
+
 ; myGui fonksiyonları
 ; ────────────────────────────────────────────────────────────────
+
 CheckChanged(*) {
     myGui.Hide()
     MouseMove fareX, fareY, 15
@@ -114,9 +134,6 @@ HepsiniSat(*) {
     MsgShow("Hepsi Satıldı")
 }
 
-OnOffBtn1Toggle(*) {
-       myGui.Hide()
-    }
 ; Fonksiyonlar
 ; ────────────────────────────────────────────────────────────────
 
@@ -249,6 +266,7 @@ RButton::{
         }
         Korun()
 }
+
 ~$WheelDown::{
     if ! myGui["ClickHelper"].Value
         {
