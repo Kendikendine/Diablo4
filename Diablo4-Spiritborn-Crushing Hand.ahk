@@ -1,9 +1,8 @@
 ;Spiritborn, Crushing Hand
 #Requires AutoHotkey v2.0
 A_ScriptWarningTimeout := -1
-;#Warn
-#SingleInstance Force
-#MaxThreadsPerHotkey 2
+#Warn
+#MaxThreadsPerHotkey 3
 KeyHistory 0
 ListLines 0
 Persistent
@@ -37,6 +36,11 @@ myGui.Add("Button", "x95 y40 w90 h30","İtem Al")
 myGui.Add("Button", "x5 y70 w180 h30", "Tümünü Sat")
     .OnEvent("Click", HepsiniSat)
 
+myGui.Add("Button", "x5   y100 w45 h30", "^r").OnEvent("Click", mbtn1)
+myGui.Add("Button", "x50  y100 w45 h30", "2").OnEvent("Click", mbtn2)
+myGui.Add("Button", "x95  y100 w45 h30", "3").OnEvent("Click", mbtn3)
+myGui.Add("Button", "x140 y100 w45 h30", "4").OnEvent("Click", mbtn4)
+
 myGui.OnEvent("Close", (*) => ExitApp())
 
 myGuiinfo1 := Gui("+ToolWindow +AlwaysOnTop", "İtemlerin Düştüğü Yerler")
@@ -49,12 +53,23 @@ myGuiinfo1.Add("Text",, "Yargı Tarlaları in patronu mührü: (Urivar) Yüzük 
                . "Asılı adamın salonu in patronu mührü(Andariel): Pantolon (Tibault's Will)`n"
                . "Müjdecinin ini in patronu mührü (nefret müjdecisi) :silah")
 
+myGuiinfo2 := Gui("+ToolWindow +AlwaysOnTop", "Amulet Skiller")
+myGuiinfo2.SetFont("s10", "Segoe UI")
+myGuiinfo2.Add("Text",, "1. Maximum Kaynak`n"
+               . "2. Apex (Zirve)`n"
+               . "3. Dominant (Hakim)`n"
+               . "4. Briliance (ihtişam)`n"
+               . "5. Potent (Tesirli)`n"
+               . "6. Furnace (Ocak)")
+              
+
 ; ────────────────────────────────────────────────────────────────
 ; Menü Oluşturma
 ; ────────────────────────────────────────────────────────────────
 mymenuBar := MenuBar()
 infoMenu := Menu()
 infoMenu.Add("İtemler", (*) => (myGui.Hide(), myGuiinfo1.Show("x" fareX " y" fareY) ))
+infoMenu.Add("Amulet", (*) => (myGui.Hide(), myGuiinfo2.Show("x" fareX " y" fareY) ))
 infoMenu.Add("Crushing Hand", (*) => (myGui.Hide(), Run("https://maxroll.gg/d4/build-guides/crushing-hand-spiritborn-guide")))
 mymenuBar.Add("Bilgi", infoMenu)
 myGui.MenuBar := mymenuBar
@@ -72,7 +87,6 @@ CheckChanged(*) {
     } 
     else { 
       SetTimer AutoKill, 0
-      SetTimer AutoClickWhileHeld, 0
       MsgShow("Tıklama Yardımcıları Kapalı")
     }
 }
@@ -134,6 +148,26 @@ HepsiniSat(*) {
     MsgShow("Hepsi Satıldı")
 }
 
+mbtn1(*) {
+  myGui.Hide()
+    Sleep Random(50, 80)
+        Send "^r"
+        Sleep Random(50, 80)
+        Send "^r"
+}
+
+mbtn2(*) {
+    myGui.Hide()
+}
+
+mbtn3(*) {
+    myGui.Hide()
+}
+
+mbtn4(*) {
+    myGui.Hide()
+}
+
 ; Fonksiyonlar
 ; ────────────────────────────────────────────────────────────────
 
@@ -172,22 +206,13 @@ AutoKill() {
     Sleep 100 
     GorilZehir()
     Sleep 100
-    
+    Send "{3}"
+    Sleep 100
     Send "{LShift down}"
     Click "down"
     Sleep 6000
     Click "up"
     Send "{LShift up}"
-}
-
-AutoClickWhileHeld(){
-        Click "Left"
-        Send "{LButton down}"
-}
-
-Clickikapa(){
-        SetTimer AutoClickWhileHeld, 0
-        SetTimer Clickikapa, 0
 }
 
 ; Hotkey'ler
@@ -211,21 +236,9 @@ $XButton1::{
 if ! KeyWait("LButton", "T2")
     { 
     GorilZehir()
+    Sleep 200
+    Send "{3}"
     }
-}
-
-~$LButton::{
-    if ! myGui["ClickHelper"].Value
-        return
-    SetTimer AutoClickWhileHeld, Random(450, 550)
-    SetTimer Clickikapa, 7000
-}
-
-~$LButton up::{
-    if ! myGui["ClickHelper"].Value
-        return
-    SetTimer AutoClickWhileHeld, 0 
-    SetTimer Clickikapa, 0
 }
 
 RButton::{
@@ -239,39 +252,43 @@ RButton::{
     Korun()
     Sleep 200
     GorilZehir()
+    Sleep 200
+    Send "{3}"
     KeyWait "RButton"
 }
 
-~$3::{
+~$WheelUp::{
     if ! myGui["ClickHelper"].Value
-        return    
+        {
+       Sleep 50
+        return
+        }
+         Sleep 100
+         Send "{2}"
+}
+
+~$WheelDown::{
+    if ! myGui["ClickHelper"].Value
+        {
+       Sleep 50
+        return
+        }
+         Sleep 100
+         Send "{1}"
+}
+
+ü::{  
         MsgShow("AutoKill açık") 
         SetTimer AutoKill, 9000
 	Sleep 100
         AutoKill()
 }
 
-~$4::{
-    if ! myGui["ClickHelper"].Value
-        return    
+ğ::{  
         MsgShow("AutoKill kapalı") 
         SetTimer AutoKill, 0
 }
 
-~$WheelUp::{
-    if ! myGui["ClickHelper"].Value
-        {
-       Sleep Random(50, 80)
-        return
-        }
-        Korun()
-}
-
-~$WheelDown::{
-    if ! myGui["ClickHelper"].Value
-        {
-       Sleep Random(50, 80)
-        return
-        }
-        Korun()
-}
+~t::myGui["ClickHelper"].Value := 0
+~Tab::myGui["ClickHelper"].Value := 1
+~m::myGui["ClickHelper"].Value := 1
