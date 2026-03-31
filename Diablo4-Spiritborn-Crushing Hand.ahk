@@ -2,6 +2,7 @@
 #Requires AutoHotkey v2.0
 A_ScriptWarningTimeout := -1
 #Warn
+#SingleInstance Force
 #MaxThreadsPerHotkey 3
 KeyHistory 0
 ListLines 0
