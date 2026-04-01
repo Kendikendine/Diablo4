@@ -17,7 +17,7 @@ CoordMode "Pixel", "Client"
 fareX := 1040
 fareY := 570
 OnOffAutoKill := 0
-
+OnOffSwitch1 := 0
 ; GUI Oluşturma
 ; ────────────────────────────────────────────────────────────────
 myGui := Gui("+ToolWindow +AlwaysOnTop", "Diablo4 Yardımcısı")
@@ -38,7 +38,7 @@ myGui.Add("Button", "x5 y70 w180 h30", "Tümünü Sat")
     .OnEvent("Click", HepsiniSat)
 
 myGui.Add("Button", "x5   y100 w45 h30", "^r").OnEvent("Click", mbtn1)
-myGui.Add("Button", "x50  y100 w45 h30", "2").OnEvent("Click", mbtn2)
+myGui.Add("Button", "x50  y100 w45 h30 vOnOffBtn1", "Off").OnEvent("Click", mbtn2)
 myGui.Add("Button", "x95  y100 w45 h30", "3").OnEvent("Click", mbtn3)
 myGui.Add("Button", "x140 y100 w45 h30", "4").OnEvent("Click", mbtn4)
 
@@ -158,7 +158,20 @@ mbtn1(*) {
 }
 
 mbtn2(*) {
+    global OnOffSwitch1 := !OnOffSwitch1
     myGui.Hide()
+    Sleep Random(50, 80)
+    
+    if OnOffSwitch1 {
+        myGui["OnOffBtn1"].Text := "On"
+        MsgShow("Klavye yardımcıları Açık")
+        ;Buraya Kodu yazarsın sonra
+    } 
+    else {
+        myGui["OnOffBtn1"].Text := "Off"
+        MsgShow("Klavye yardımcıları Kapalı")
+        ;Buraya kodu yazarsın sonra
+    }
 }
 
 mbtn3(*) {
@@ -278,18 +291,34 @@ RButton::{
          Send "{1}"
 }
 
-ü::{  
+~ü::{  
+        if ! OnOffSwitch1
+        return
         MsgShow("AutoKill açık") 
         SetTimer AutoKill, 9000
 	Sleep 100
         AutoKill()
 }
 
-ğ::{  
+~ğ::{  
+ if ! OnOffSwitch1
+        return
         MsgShow("AutoKill kapalı") 
         SetTimer AutoKill, 0
 }
 
-~t::myGui["ClickHelper"].Value := 0
-~Tab::myGui["ClickHelper"].Value := 1
-~m::myGui["ClickHelper"].Value := 1
+~t::{
+if ! OnOffSwitch1
+        return
+myGui["ClickHelper"].Value := 0
+}
+~Tab::{
+if ! OnOffSwitch1
+        return
+myGui["ClickHelper"].Value := 1
+}
+~m::{
+if ! OnOffSwitch1
+        return
+myGui["ClickHelper"].Value := 1
+}
