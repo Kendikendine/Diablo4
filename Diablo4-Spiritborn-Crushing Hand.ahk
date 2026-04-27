@@ -17,7 +17,7 @@ CoordMode "Pixel", "Client"
 fareX := 1040
 fareY := 570
 OnOffAutoKill := 0
-OnOffSwitch1 := 0
+OnOffKlavye := 1
 ; GUI Oluşturma
 ; ────────────────────────────────────────────────────────────────
 myGui := Gui("+ToolWindow +AlwaysOnTop", "Diablo4 Yardımcısı")
@@ -38,7 +38,7 @@ myGui.Add("Button", "x5 y70 w180 h30", "Tümünü Sat")
     .OnEvent("Click", HepsiniSat)
 
 myGui.Add("Button", "x5   y100 w45 h30", "^r").OnEvent("Click", mbtn1)
-myGui.Add("Button", "x50  y100 w45 h30 vOnOffBtn1", "Off").OnEvent("Click", mbtn2)
+myGui.Add("Button", "x50  y100 w45 h30 vOnOffBtn1", "On").OnEvent("Click", mbtn2)
 myGui.Add("Button", "x95  y100 w45 h30", "3").OnEvent("Click", mbtn3)
 myGui.Add("Button", "x140 y100 w45 h30", "4").OnEvent("Click", mbtn4)
 
@@ -58,10 +58,9 @@ myGuiinfo2 := Gui("+ToolWindow +AlwaysOnTop", "Amulet Skiller")
 myGuiinfo2.SetFont("s10", "Segoe UI")
 myGuiinfo2.Add("Text",, "1. Maximum Kaynak`n"
                . "2. Apex (Zirve)`n"
-               . "3. Dominant (Hakim)`n"
-               . "4. Briliance (ihtişam)`n"
-               . "5. Potent (Tesirli)`n"
-               . "6. Furnace (Ocak)")
+               . "3. Briliance (ihtişam)`n"
+               . "4. Potent (Tesirli)`n"
+               . "5. Furnace (Ocak)")
               
 
 ; ────────────────────────────────────────────────────────────────
@@ -71,7 +70,7 @@ mymenuBar := MenuBar()
 infoMenu := Menu()
 infoMenu.Add("İtemler", (*) => (myGui.Hide(), myGuiinfo1.Show("x" fareX " y" fareY) ))
 infoMenu.Add("Amulet", (*) => (myGui.Hide(), myGuiinfo2.Show("x" fareX " y" fareY) ))
-infoMenu.Add("Crushing Hand", (*) => (myGui.Hide(), Run("https://maxroll.gg/d4/build-guides/crushing-hand-spiritborn-guide")))
+infoMenu.Add("Payback Build", (*) => (myGui.Hide(), Run("https://maxroll.gg/d4/build-guides/payback-spiritborn-build-guide")))
 mymenuBar.Add("Bilgi", infoMenu)
 myGui.MenuBar := mymenuBar
 
@@ -120,7 +119,7 @@ itemal(*) {
 
      Loop 33 {
         Click "Right"
-        Sleep Random(300, 500)
+        Sleep Random(100, 120)
     }
    
     MsgShow("İtemler alındı.")
@@ -141,7 +140,7 @@ HepsiniSat(*) {
             MouseMove pos.x, pos.y, 15
             Sleep Random(50, 80)
             Click "Right"
-            Sleep Random(300, 500)
+            Sleep Random(100, 120)
         }
     }
 
@@ -158,19 +157,15 @@ mbtn1(*) {
 }
 
 mbtn2(*) {
-    global OnOffSwitch1 := !OnOffSwitch1
-    myGui.Hide()
+    global OnOffKlavye := !OnOffKlavye
     Sleep Random(50, 80)
-    
-    if OnOffSwitch1 {
+    if OnOffKlavye {
         myGui["OnOffBtn1"].Text := "On"
         MsgShow("Klavye yardımcıları Açık")
-        ;Buraya Kodu yazarsın sonra
     } 
     else {
         myGui["OnOffBtn1"].Text := "Off"
         MsgShow("Klavye yardımcıları Kapalı")
-        ;Buraya kodu yazarsın sonra
     }
 }
 
@@ -216,6 +211,7 @@ GorilZehir() {
 }
 
 AutoKill() { 
+    MouseGetPos &X, &Y
     Korun()
     Sleep 100 
     GorilZehir()
@@ -224,9 +220,17 @@ AutoKill() {
     Sleep 100
     Send "{LShift down}"
     Click "down"
-    Sleep 6000
+    MouseMove 944, 23, 15
+    Sleep 1500
+    MouseMove 1591, 486, 15
+    Sleep 1500
+    MouseMove 967, 953, 15
+    Sleep 1500
+    MouseMove 94, 633, 15
+    Sleep 1500
     Click "up"
     Send "{LShift up}"
+    MouseMove X, Y, 15
 }
 
 ; Hotkey'ler
@@ -239,15 +243,15 @@ $XButton1::{
 }
 
 ~$+LButton::{
-    if ! myGui["ClickHelper"].Value
+    if !myGui["ClickHelper"].Value
         return
 
-    if ! KeyWait("LButton", "T2")
+    if !KeyWait("LButton", "T2")
     {
      Korun()
     }
 
-if ! KeyWait("LButton", "T2")
+if !KeyWait("LButton", "T2")
     { 
     GorilZehir()
     Sleep 200
@@ -256,7 +260,7 @@ if ! KeyWait("LButton", "T2")
 }
 
 RButton::{
-    if ! myGui["ClickHelper"].Value
+    if !myGui["ClickHelper"].Value
     {
         Send "{RButton down}"
         KeyWait "RButton"
@@ -272,7 +276,7 @@ RButton::{
 }
 
 ~$WheelUp::{
-    if ! myGui["ClickHelper"].Value
+    if !myGui["ClickHelper"].Value
         {
        Sleep 50
         return
@@ -282,7 +286,7 @@ RButton::{
 }
 
 ~$WheelDown::{
-    if ! myGui["ClickHelper"].Value
+    if !myGui["ClickHelper"].Value
         {
        Sleep 50
         return
@@ -292,7 +296,7 @@ RButton::{
 }
 
 ~ü::{  
-        if ! OnOffSwitch1
+        if !OnOffKlavye
         return
         MsgShow("AutoKill açık") 
         SetTimer AutoKill, 9000
@@ -301,24 +305,26 @@ RButton::{
 }
 
 ~ğ::{  
- if ! OnOffSwitch1
+        if !OnOffKlavye
         return
         MsgShow("AutoKill kapalı") 
         SetTimer AutoKill, 0
 }
 
 ~t::{
-if ! OnOffSwitch1
+        if !OnOffKlavye
         return
-myGui["ClickHelper"].Value := 0
+        myGui["ClickHelper"].Value := 0
 }
+
 ~Tab::{
-if ! OnOffSwitch1
+        if !OnOffKlavye
         return
-myGui["ClickHelper"].Value := 1
+        myGui["ClickHelper"].Value := 1
 }
+
 ~m::{
-if ! OnOffSwitch1
+        if !OnOffKlavye
         return
-myGui["ClickHelper"].Value := 1
+        myGui["ClickHelper"].Value := 1
 }
