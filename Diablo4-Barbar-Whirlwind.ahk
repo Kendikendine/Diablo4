@@ -1,0 +1,454 @@
+﻿;Barbar, Whirlwind
+#Requires AutoHotkey v2.0
+A_ScriptWarningTimeout := -1
+#Warn
+#SingleInstance Force
+#MaxThreadsPerHotkey 3
+KeyHistory 0
+ListLines 0
+Persistent
+SetKeyDelay -1, -1
+SetMouseDelay -1
+CoordMode "Mouse", "Client"
+CoordMode "Pixel", "Client"
+
+; global Değişkenler
+; ────────────────────────────────────────────────────────────────
+fareX := 1040
+fareY := 570
+OnOffKlavye := 1
+OnOffAutofire := 0
+BooOnOff := 0
+CanOnOff := 0
+BalikOnOff :=0
+BooSuresi := 5000
+BalikSüreMin := 3000
+BalikSüreMax := 5000
+KontrolSuresi := 1000
+
+; GUI Oluşturma
+; ────────────────────────────────────────────────────────────────
+myGui := Gui("+ToolWindow +AlwaysOnTop", "Diablo4 Yardımcısı")
+myGui.SetFont("s10", "Segoe UI")
+
+myGui.Add("Checkbox", "x5 y10 w90 h30 vClickHelper", "Click Helper")
+    .OnEvent("Click", CheckChanged)
+
+myGui.Add("Button", "x95 y10 w90 h30", "Gizle").OnEvent("Click", (*) => myGui.Hide())
+
+myGui.Add("Button", "x5 y40 w90 h30 vbalikbtn ", "BalikOff")
+    .OnEvent("Click", Balik)
+
+myGui.Add("Button", "x95 y40 w90 h30","İtem Al")
+    .OnEvent("Click", itemal)
+
+myGui.Add("Button", "x5 y70 w180 h30", "Tümünü Sat")
+    .OnEvent("Click", HepsiniSat)
+
+myGui.Add("Button", "x5   y100 w45 h30", "^r").OnEvent("Click", mbtn1)
+myGui.Add("Button", "x50  y100 w45 h30 vOnOffBtn1", "On").OnEvent("Click", mbtn2)
+myGui.Add("Button", "x95  y100 w45 h30 vBooBtn", "Boo")
+    .OnEvent("Click", BooBtnClick)
+myGui.Add("Button", "x140 y100 w45 h30 vCanBtn", "Can").OnEvent("Click", CanBtnClick)
+
+myGui.OnEvent("Close", (*) => ExitApp())
+
+myGuiinfo1 := Gui("+ToolWindow +AlwaysOnTop", "İtemlerin Düştüğü Yerler")
+myGuiinfo1.SetFont("s10", "Segoe UI")
+myGuiinfo1.Add("Text",, "Kafalık: Bartuk`n"
+               . "Eldiven: Georgie`n"
+               . "Pantolon non bos unuque`n"
+               . "Ramaldini silah Butcher`n")             
+
+; ────────────────────────────────────────────────────────────────
+; Menü Oluşturma
+; ────────────────────────────────────────────────────────────────
+mymenuBar := MenuBar()
+infoMenu := Menu()
+infoMenu.Add("İtemler", (*) => (myGui.Hide(), myGuiinfo1.Show("x" fareX " y" fareY) ))
+infoMenu.Add("WWBarb Build", (*) => (myGui.Hide(), Run("https://maxroll.gg/d4/build-guides/whirlwind-barbarian-guide")))
+mymenuBar.Add("Bilgi", infoMenu)
+
+balikMenu := Menu()
+balikMenu.Add("Ayarlar", AyarlarMenu)
+balikMenu.Add("Renk Takip", RenkTakipMenu)
+mymenuBar.Add("Araclar", balikMenu)
+myGui.MenuBar := mymenuBar
+
+; myGui fonksiyonları
+; ────────────────────────────────────────────────────────────────
+
+CheckChanged(*) {
+    myGui.Hide()
+    MouseMove fareX, fareY, 15
+    Sleep Random(50, 80)
+
+    if myGui["ClickHelper"].Value {
+       MsgShow("Tıklama Yardımcıları Açık")
+    } 
+    else { 
+      MsgShow("Tıklama Yardımcıları Kapalı")
+    }
+}
+    
+itemal(*) {
+    myGui.Hide()
+    MouseMove fareX, fareY, 15
+    Sleep Random(50, 80)
+
+     Loop 33 {
+        Click "Right"
+        Sleep Random(100, 120)
+    }
+   
+    MsgShow("İtemler alındı.")
+    MouseMove 1170, 770, 15
+    Sleep Random(50, 80)
+    Click "Left"
+}
+
+HepsiniSat(*) {
+    myGui.Hide()
+    Sleep Random(50, 80)
+
+    Loop 3 {
+        satır := A_Index
+        Loop 11 {
+            sütun := A_Index
+            pos := GetInvPos(satır, sütun)
+            MouseMove pos.x, pos.y, 15
+            Sleep Random(50, 80)
+            Click "Right"
+            Sleep Random(100, 120)
+        }
+    }
+
+    MouseMove fareX, fareY, 15
+    MsgShow("Hepsi Satıldı")
+}
+
+mbtn1(*) {
+  myGui.Hide()
+    Sleep Random(50, 80)
+        Send "^r"
+        Sleep Random(50, 80)
+        Send "^r"
+}
+
+mbtn2(*) {
+    global OnOffKlavye := !OnOffKlavye
+    Sleep Random(50, 80)
+    if OnOffKlavye {
+        myGui["OnOffBtn1"].Text := "On"
+        MsgShow("Klavye yardımcıları Açık")
+    } 
+    else {
+        myGui["OnOffBtn1"].Text := "Off"
+        MsgShow("Klavye yardımcıları Kapalı")
+    }
+}
+BooBtnClick(*) {
+    global BooOnOff, BooSuresi   ; ← BooSuresi eklendi
+    
+    BooOnOff := !BooOnOff
+    
+    if BooOnOff {
+        myGui["BooBtn"].Text := "On"
+        SetTimer Boo, BooSuresi   ; ← 5000 yerine BooSuresi yazıldı
+        MsgShow("Boo aktif")
+    } 
+    else {
+        myGui["BooBtn"].Text := "Boo"
+        SetTimer Boo, 0
+        MsgShow("Boo pasif")
+    }
+}
+; ==================== Can Sistemi ====================
+CanBtnClick(*) {
+    global CanOnOff, KontrolSuresi
+    CanOnOff := !CanOnOff
+    
+    if CanOnOff {
+        myGui["CanBtn"].Text := "On"
+        SetTimer CanPotKontrol, KontrolSuresi
+        MsgShow("Can pot sistemi aktif")
+    } 
+    else {
+        myGui["CanBtn"].Text := "Can"
+        SetTimer CanPotKontrol, 0
+        MsgShow("Can pot sistemi pasif")
+    }
+}
+
+   CanPotKontrol() {
+    color := PixelGetColor(fareX, fareY, "RGB")
+    if (SubStr(color, 1, 3) = "0x0" || SubStr(color, 1, 3) = "0x1" || SubStr(color, 1, 3) = "0x2") {
+        Send "q"
+        MsgShow("Can içtim")
+    }
+}
+; ==================== BALIK AV SISTEMI ====================
+
+Balik(*) {
+    global BalikOnOff := !BalikOnOff
+     myGui.Hide()
+    MouseMove fareX, fareY, 15
+    Sleep Random(50, 80)
+    if BalikOnOff {
+        myGui["balikbtn"].Text := "BalikOn"
+        BalikAv()
+        SetTimer BalikAv, BalikSüreMax + 1000
+    } else {
+        myGui["balikbtn"].Text := "BalikOff"
+        SetTimer BalikAv, 0
+    }
+}
+
+BalikAv() {
+    Send "Ğ"
+    Sleep Random(BalikSüreMin, BalikSüreMax)
+    Send "1"
+}
+
+; ==================== YENİ AYARLAR MENÜSÜ ====================
+AyarlarMenu(*) {
+    global BalikOnOff, BalikSüreMin, BalikSüreMax, KontrolSuresi, BooSuresi   ; ← BooSuresi eklendi
+    
+    ; Balığı kapat
+    SetTimer BalikAv, 0
+    BalikOnOff := 0
+    myGui["balikbtn"].Text := "BalikOff"
+    
+    ; Ayar GUI
+    ayarGui := Gui("+ToolWindow +AlwaysOnTop", "Ayarlar")
+    ayarGui.SetFont("s10", "Segoe UI")
+    
+    ayarGui.Add("Text", "x10 y15 w160", "Balık Minimum Süre (ms):")
+    minEdit := ayarGui.Add("Edit", "x180 y12 w80", BalikSüreMin)
+    
+    ayarGui.Add("Text", "x10 y45 w160", "Balık Maksimum Süre (ms):")
+    maxEdit := ayarGui.Add("Edit", "x180 y42 w80", BalikSüreMax)
+    
+    ayarGui.Add("Text", "x10 y75 w160", "Can & Renk Kontrol Süresi (ms):")
+    kontrolEdit := ayarGui.Add("Edit", "x180 y72 w80", KontrolSuresi)
+    
+    ; === YENİ EKLEME (Boo süresi) ===
+    ayarGui.Add("Text", "x10 y105 w160", "Boo Süresi (ms):")
+    booEdit := ayarGui.Add("Edit", "x180 y102 w80", BooSuresi)
+    
+    ayarGui.Add("Button", "x80 y140 w100 h30 Default", "Tamam").OnEvent("Click", (*) => KaydetAyar())   ; ← y140 olarak güncellendi (button aşağı kaydı)
+    
+    ayarGui.Show("x" fareX+50 " y" fareY)
+    
+    KaydetAyar(*) {
+        global BalikSüreMin, BalikSüreMax, KontrolSuresi, BooSuresi   ; ← BooSuresi eklendi
+        BalikSüreMin := Integer(minEdit.Value)
+        BalikSüreMax := Integer(maxEdit.Value)
+        KontrolSuresi := Integer(kontrolEdit.Value)
+        BooSuresi     := Integer(booEdit.Value)   ; ← yeni satır
+        ayarGui.Destroy()
+        MsgShow("Ayarlar güncellendi:`nBalık Min: " BalikSüreMin " ms`nBalık Max: " BalikSüreMax " ms`nKontrol Süresi: " KontrolSuresi " ms`nBoo Süresi: " BooSuresi " ms")
+    }
+}
+; ==================== RENK TAKİP SİSTEMİ ====================
+RenkTakipMenu(*) {
+    global fareX, fareY, KontrolSuresi
+    
+    myGui.Hide()
+    
+    global RenkTakipGui := Gui("+ToolWindow +AlwaysOnTop", "Renk Takip")
+    RenkTakipGui.SetFont("s10", "Segoe UI")
+    
+    global RT_XText := RenkTakipGui.Add("Text", "x10 y10 w200", "X: " fareX " | Y: " fareY)
+    global RT_RenkText := RenkTakipGui.Add("Text", "x10 y35 w200", "Renk: ------")
+    
+    RenkTakipGui.Add("Button", "x10 y65 w100 h30", "Kopyala").OnEvent("Click", RenkKopyala)
+    
+    RenkTakipGui.Show("x" fareX " y" fareY-50)
+    WinSetTransparent(150, "ahk_id " RenkTakipGui.Hwnd)
+    RenkTakipGui.OnEvent("Close", RenkTakipGui_Close)
+    SetTimer RenkGuncelle, KontrolSuresi
+}
+
+RenkGuncelle() {
+    global RT_XText, RT_RenkText, fareX, fareY
+    
+    color := PixelGetColor(fareX, fareY, "RGB")
+    RT_XText.Text := "X: " fareX " | Y: " fareY
+    RT_RenkText.Text := "Renk: " color
+}
+
+RenkKopyala(*) {
+    global fareX, fareY
+    color := PixelGetColor(fareX, fareY, "RGB")
+    A_Clipboard := fareX "," fareY "," color
+    MsgShow("Kopyalandı: " fareX "," fareY "," color)
+}
+
+RenkTakipGui_Close(*) {   ; Close eventi
+    SetTimer RenkGuncelle, 0
+    RenkTakipGui.Destroy()
+}
+
+; Fonksiyonlar
+; ────────────────────────────────────────────────────────────────
+
+MsgShow(Msg) {
+    CoordMode "ToolTip", "Client"
+    ToolTip Msg, fareX, fareY
+    SetTimer () => ToolTip(), -6000
+}
+
+GetInvPos(satir, sutun) {
+    static baseX   := 1220
+    static baseY   := 840
+    static colStep := 60
+    static rowStep := 100
+
+    x := baseX + (sutun - 1) * colStep
+    y := baseY + (satir - 1) * rowStep
+
+    return {x: x, y: y}
+}
+
+
+Korun() {
+    Send "3"
+    Sleep Random(100, 120)
+    Send "1"
+    Sleep Random(100, 120)
+    Send "2"
+}
+
+Demir() {
+    Send "{Shift down}"
+    Click "Left"
+    Sleep Random(50, 80)
+    Send "{Shift up}"
+}
+
+GazapKontrol() {
+    static targetColor := 0x030303   ; RGB: 030303
+    
+    color := PixelGetColor(1009, 1131, "RGB")
+    
+    if (color != targetColor) {
+        Send "4"
+    }
+}
+
+Boo() {
+    Send "2"
+}
+
+autofireon() {
+            Demir()
+            Sleep Random(100, 120)
+            Korun()
+            Sleep Random(100, 120)
+            GazapKontrol()
+
+    SetTimer Demir, 11000
+    SetTimer Korun, 19000
+    SetTimer GazapKontrol, 2000
+    Send "{RButton down}"
+}
+
+autofireoff() {
+    SetTimer Demir, 0
+    SetTimer Korun, 0
+    SetTimer GazapKontrol, 0
+    Send "{RButton up}"
+}
+
+; Hotkey'ler
+; ────────────────────────────────────────────────────────────────
+$XButton1::{
+    ; Çift tıklama kontrolü
+    if (A_PriorHotkey == "$XButton1" && A_TimeSincePriorHotkey < 300)
+    {
+        myGui.Hide()   
+        global OnOffAutofire := !OnOffAutofire
+        
+        if OnOffAutofire {
+            autofireon()
+            MsgShow("Autofire açık")
+        } 
+        else {
+            autofireoff()
+            MsgShow("Autofire kapalı")
+        }
+    }
+    else
+    {
+        ; Tek tıklama
+        if (WinExist("ahk_id " myGui.Hwnd)) {
+            myGui.Hide()
+        } 
+        else {
+            MouseGetPos &X, &Y
+            myGui.Show("x" X " y" Y)
+            global fareX := X
+            global fareY := Y
+        }
+    }
+}
+~$RButton::{
+    if !myGui["ClickHelper"].Value
+        return
+
+; İlk 2 saniye kontrolü
+    if !KeyWait("RButton", "T2")
+    {
+        Demir()
+        SetTimer Demir, 11000
+        
+        ; Hala basılıysa ikinci 2 saniye kontrolü (toplam 4 saniye)
+        if !KeyWait("RButton", "T2")
+        {
+            Korun()
+            Sleep Random(100, 120)
+            GazapKontrol()
+            SetTimer Korun, 19000
+            SetTimer GazapKontrol, 2000
+        }
+    }
+}
+
+~RButton Up::{
+        if !myGui["ClickHelper"].Value
+        return
+    SetTimer Korun, 0
+    SetTimer Demir, 0
+    SetTimer GazapKontrol, 0
+}
+
+~$WheelUp::{
+    if !myGui["ClickHelper"].Value
+        {
+       Sleep 50
+        return
+        }
+; Buraya kod yaz
+}
+
+~$WheelDown::{
+    if !myGui["ClickHelper"].Value
+        {
+       Sleep 50
+        return
+        }
+; Buraya kod yaz
+}
+
+~t::{
+        if !OnOffKlavye
+        return
+        myGui["ClickHelper"].Value := 0
+}
+
+~Tab::{
+        if !OnOffKlavye
+        return
+        myGui["ClickHelper"].Value := 1
+}
