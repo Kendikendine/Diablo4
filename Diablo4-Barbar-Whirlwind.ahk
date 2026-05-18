@@ -39,10 +39,6 @@ GuneyX := 990
 GuneyY := 875
 BatiX  := 1437
 BatiY  := 539
-
-global AutoMoveIndex := 1
-
-
 ; =============================================
 ; GUI OLUŞTURMA
 ; =============================================
@@ -435,8 +431,6 @@ OtomatikHareketBaslat(*) {
     SetTimer CanPotKontrol, KontrolSuresi
 
     autofireon()
-
-    global AutoMoveIndex := 1
     SetTimer AutoMoveCycle, 6000
     
     MsgShow("Otomatik Hareket Sistemi BAŞLADI")
