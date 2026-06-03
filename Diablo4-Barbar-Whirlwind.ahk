@@ -25,7 +25,7 @@ OnOffAutofire := 0
 BooOnOff := 0
 CanOnOff := 0
 BalikOnOff :=0
-BooSuresi := 5000
+BooSuresi := 6000
 BalikSüreMin := 3000
 BalikSüreMax := 5000
 KontrolSuresi := 777
@@ -197,13 +197,11 @@ BooBtnClick(*) {
     
     if BooOnOff {
         myGui["BooBtn"].Text := "On"
-        SetTimer Boo, BooSuresi
-        MsgShow("Boo aktif")
+        ;Kodu Yaz Boo açıkken
     } 
     else {
         myGui["BooBtn"].Text := "Boo"
-        SetTimer Boo, 0
-        MsgShow("Boo pasif")
+        ;Kodu yaz Boo Kapalıyken
     }
 }
 
@@ -231,7 +229,7 @@ CanPotKontrol() {
     color := PixelGetColor(fareX, fareY, "RGB")
     if (SubStr(color, 1, 3) = "0x0" || SubStr(color, 1, 3) = "0x1" || SubStr(color, 1, 3) = "0x2") {
         Send "q"
-        MsgShow("Can içtim")
+        MsgShow("cana bastım")
     }
 }
 
@@ -424,14 +422,17 @@ itemtavla() {
 OtomatikHareketBaslat(*) {
     myGui.Hide()
     Sleep Random(50, 80)
-
+    myGui["OnOffBtn1"].Text := "On"
+     global OnOffKlavye := 1
+    Sleep Random(50, 80)
     Boo()
     SetTimer Boo, BooSuresi
 
     SetTimer CanPotKontrol, KontrolSuresi
 
     autofireon()
-    SetTimer AutoMoveCycle, 6000
+
+    SetTimer AutoMoveCycle, 3000
     
     MsgShow("Otomatik Hareket Sistemi BAŞLADI")
 }
@@ -461,10 +462,10 @@ Demir() {
 }
 
 GazapKontrol() {
-    static x := 1016
-    static y := 1101
-    static forbiddenColor1 := 0x3C2717
-    static forbiddenColor2 := 0x020202
+    static x := 1011
+    static y := 1103
+    static forbiddenColor1 := 0x3C2718
+    static forbiddenColor2 := 0x030303
     
     color := PixelGetColor(x, y, "RGB")
     
@@ -480,9 +481,9 @@ GazapKontrol() {
 
 MeydanOkuKontrol() {
     static x := 802
-    static y := 1100
-    static forbiddenColor1 := 0x3D291B
-    static forbiddenColor2 := 0x090909
+    static y := 1109
+    static forbiddenColor1 := 0x3F2B1E
+    static forbiddenColor2 := 0x100F10
     
     color := PixelGetColor(x, y, "RGB")
     
@@ -496,10 +497,10 @@ MeydanOkuKontrol() {
  MsgShow("1'e bastım")
 }
 SavasNaraKontrol() {
-    static x := 941
-    static y := 1102
-    static forbiddenColor1 := 0x45342A
-    static forbiddenColor2 := 0x212121
+    static x := 943
+    static y := 1103
+    static forbiddenColor1 := 0x3C2717
+    static forbiddenColor2 := 0x010101
     
     color := PixelGetColor(x, y, "RGB")
     
@@ -513,10 +514,10 @@ SavasNaraKontrol() {
  MsgShow("3'e bastım")
 }
 DemirKontrol() {
-    static x := 1079
-    static y := 1098
-    static forbiddenColor1 := 0x3C3718
-    static forbiddenColor2 := 0x030403
+    static x := 1085
+    static y := 1116
+    static forbiddenColor1 := 0x3C2819
+    static forbiddenColor2 := 0x060606
     
     color := PixelGetColor(x, y, "RGB")
     
@@ -533,30 +534,34 @@ DemirKontrol() {
 Boo() {
     Send "2"
     MsgShow("2'e bastım")
-    Sleep Random(200, 300)
-    Send "{Space}"
+    ;Sleep Random(200, 300)
+    ;Send "{Space}"
 }
 
 autofireon() {
    GazapKontrol()
    Sleep Random(200, 300)
-   DemirKontrol() 
+   ; DemirKontrol() 
    Sleep Random(200, 300)
    SavasNaraKontrol()
    Sleep Random(200, 300)
    MeydanOkuKontrol()
+   Sleep Random(200, 300)
+   Boo()
     SetTimer GazapKontrol, 1300
-    SetTimer DemirKontrol, 1000
+    ; SetTimer DemirKontrol, 1000
     SetTimer SavasNaraKontrol, 1100
     SetTimer MeydanOkuKontrol, 1200
+    SetTimer Boo, BooSuresi
     Send "{RButton down}"
 }
 
 autofireoff() {
     SetTimer GazapKontrol, 0
-    SetTimer DemirKontrol, 0
+    ; SetTimer DemirKontrol, 0
     SetTimer SavasNaraKontrol, 0
     SetTimer MeydanOkuKontrol, 0
+    SetTimer Boo, 0
     Send "{RButton up}"
 }
 
@@ -604,16 +609,20 @@ $XButton1::{
     {
    SavasNaraKontrol()
    Sleep Random(200, 300)
+   Boo()
+   Sleep Random(200, 300)
    MeydanOkuKontrol()
+    SetTimer Boo, BooSuresi
     SetTimer SavasNaraKontrol, 1100
     SetTimer MeydanOkuKontrol, 1200
 
         if !KeyWait("RButton", "T2")
         {
-             GazapKontrol()
-            SetTimer GazapKontrol, 1300
-              DemirKontrol()
-            SetTimer DemirKontrol, 1000
+              GazapKontrol()
+              Sleep Random(200, 300)
+              ; DemirKontrol()
+              SetTimer GazapKontrol, 1300
+             ; SetTimer DemirKontrol, 1000
         }
     }
 }
@@ -622,7 +631,8 @@ $XButton1::{
     if !myGui["ClickHelper"].Value
         return
     SetTimer GazapKontrol, 0
-    SetTimer DemirKontrol, 0
+    SetTimer Boo, 0
+    ; SetTimer DemirKontrol, 0
     SetTimer SavasNaraKontrol, 0
     SetTimer MeydanOkuKontrol, 0
 }
@@ -647,6 +657,9 @@ $XButton1::{
     if !OnOffKlavye
         return
     myGui["ClickHelper"].Value := 0
+    myGui["CanBtn"].Text := "Can"
+    SetTimer CanPotKontrol, 0
+    global CanOnOff := 0   
 }
 
 ~Tab::{
@@ -669,7 +682,7 @@ $XButton1::{
     SetTimer Boo, 0
     SetTimer CanPotKontrol, 0
     SetTimer GazapKontrol, 0
-    SetTimer DemirKontrol, 0
+    ; SetTimer DemirKontrol, 0
     SetTimer SavasNaraKontrol, 0
     SetTimer MeydanOkuKontrol, 0
     SetTimer BalikAv, 0
