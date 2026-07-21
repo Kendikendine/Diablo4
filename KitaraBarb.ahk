@@ -7,7 +7,45 @@ CoordMode "Mouse", "Client"
 CoordMode "Pixel", "Client"
 CoordMode "ToolTip", "Client"
 
+; =============================================
+; GUI OLUŞTURMA
+; =============================================
 
+;Ana GUI
+myGui := Gui("+ToolWindow +AlwaysOnTop", "Ayarlar")
+myGui.SetFont("s10", "Segoe UI")
+
+myGui.Add("Checkbox", "x5 y10 w90 h30 vClickHelper", "Click Helper")
+    .OnEvent("Click", CheckChanged)
+
+myGui.Add("Button", "x95 y10 w90 h30", "Gizle").OnEvent("Click", (*) => myGui.Hide())
+
+myGui.OnEvent("Close", (*) => ExitApp())
+
+; Bilgi GUI
+myGuiinfo1 := Gui("+ToolWindow +AlwaysOnTop", "İtemlerin Düştüğü Yerler")
+myGuiinfo1.SetFont("s10", "Segoe UI")
+myGuiinfo1.Add("Text",, "Kafalık: Bartuk`n"
+               . "Göğüs zırhı: Duriel`n"
+               . "Pantolon Butcher`n"
+               . "Ramaldini silah Butcher`n") 
+
+; Kısayollar GUI
+myGuiKisayollar := Gui("+ToolWindow +AlwaysOnTop", "Kısayollar")
+myGuiKisayollar.SetFont("s10", "Segoe UI")
+myGuiKisayollar.Add("Text",,
+    "XButton1 tek tıklama → Timerler aç/kapat`n" .
+    "XButton1 çift tıklama → Ayarlar GUI aç`n" .
+    "XButton1 basılı tutma → Tüm skill tuşlarını bas`n" .
+    "LButton (2 sn basılı) → Mesaj göster (2 saniye)`n" .
+    "LButton (4 sn basılı) → Mesaj göster (4 saniye)`n" .
+    "LButton bırakma → ClickHelper açıksa işlem yapar`n" .
+    "Shift + XButton1 → Hepsini Sat`n" .
+    "Ctrl + XButton1 → İtemleri Al`n" .
+    "Alt + XButton1 → Item Tavla"
+)
+
+;Mesaj GUI
 MsgGui := Gui("+AlwaysOnTop -Caption +ToolWindow  +E0x20")
 MsgGui.BackColor := "010101"
 MsgGui.SetFont("s18 cYellow bold", "Segoe UI")
@@ -16,6 +54,19 @@ WinSetTransColor("010101", MsgGui)
 
 MsgText := MsgGui.AddText("x10 y10 w400 Center BackgroundTrans", "")
 
+; =============================================
+; MENÜ OLUŞTURMA
+; =============================================
+mymenuBar := MenuBar()
+infoMenu := Menu()
+infoMenu.Add("İtemler", (*) => (myGui.Hide(), myGuiinfo1.Show("x750 y250") ))
+infoMenu.Add("ChargeBarb Build", (*) => (myGui.Hide(), Run("https://d4builds.gg/builds/charge-barbarian-endgame/?var=0")))
+infoMenu.Add("Kısayollar", (*) => (myGui.Hide(), myGuiKisayollar.Show("x750 y250")))
+mymenuBar.Add("Bilgi", infoMenu)
+
+myGui.MenuBar := mymenuBar
+
+; =========Temel Fonksiyonlar================
 MsgShow(Msg) {
     global MsgText, MsgGui
     
@@ -63,7 +114,18 @@ GetRndMsg(which) {
     return "Parametreyi kontrol et"
 }
 
- GetInvPos(satir, sutun) {
+CheckChanged(*) {
+    Sleep Random(50, 80)
+
+    if myGui["ClickHelper"].Value {
+       MsgShow("Tıklama Yardımcıları Açık")
+    } 
+    else { 
+      MsgShow("Tıklama Yardımcıları Kapalı")
+    }
+}
+
+GetInvPos(satir, sutun) {
     static baseX   := 1220
     static baseY   := 840
     static colStep := 60
@@ -137,7 +199,7 @@ return
     ; İkinci KeyWait: tekrar basılmasını bekle, 0.15 saniye sınır
     if KeyWait("XButton1", "D T0.250") {
         ; Çift tıklama algılandı
-         MsgShow("Çift Tıkladın")
+         myGui.Show("x750 y350")
         return
     }
 
@@ -145,15 +207,35 @@ return
     TimerlerOpenClose()
 }
 
-$Numpad2::{
-   ShiftSolClick()
+~$LButton::{
+    if !myGui["ClickHelper"].Value
+        return
+
+    if !KeyWait("LButton", "T2")
+    {
+;buraya basıldıktan 2 saniye sonra çalışacak şeyler yaz
+      SetTimer  Zipla , 1200
+
+        if !KeyWait("LButton", "T2")
+        {
+             ;burayada 4 saniye sonra çalışacak şeylerii yaz
+        }
+    }
 }
 
+~LButton Up::{
+    if !myGui["ClickHelper"].Value
+        return
+;buraya elini bırakınca yazılan şeyleri yaz
+SetTimer Zipla , 0
+
+}
 
 +$XButton1::HepsiniSat()     ; Shift + XButton1
 ^$XButton1::itemal()         ; Ctrl + XButton1
 !$XButton1::itemtavla()      ; Alt + XButton1
-; =========Fonksiyonlar================
+
+; =========Karakter Fonksiyonları================
 TimerlerOpenClose() {
   
     static TimersOnOff :=0
@@ -162,17 +244,21 @@ TimerlerOpenClose() {
     if TimersOnOff {
         MsgShow( GetRndMsg(1) )    ; Başlangıç mesajı
         Sleep(Random(1000, 1200))
-        YürekNara()
-       
+        TimerlerOpen()      
 }
     else {
         MsgShow( GetRndMsg(2) )    ; Durdurma mesajı
-       SetTimer(YürekNara, 0)
+       TimerlerClose()
     }
 }
 
-ShiftSolClick() {
-Send("+{Click}")
+TmSkiller() {
+    MsgShow("Tüm Tuşlara bastık")
+    
+    for key in ["Numpad2", "Numpad1", "Numpad8", "Numpad4"] {
+        Send("{" key "}")
+        Sleep(Random(350, 450))
+    }
 }
 
 YürekNara(){
@@ -181,13 +267,62 @@ YürekNara(){
     SetTimer(YürekNara, Random(7200, 8000))
 }
 
-TmSkiller(){
-   MsgShow("Tüm Tuşlara bastık ")
-    ShiftSolClick()
-    Sleep (Random(300, 400))
-    Send "{Numpad4}"
-    Sleep (Random(300, 400))
-    Send "{Numpad8}"
-    Sleep (Random(300, 400))
-    Send "{Numpad1}" 
+Zipla(){
+   Send "{Numpad7}"
+   Sleep(Random(350, 450))
+   Send "{Numpad7}"
+}
+
+ MeydanokuKontrol() {
+    static x := 865, y := 1096
+    static f1 := 0x3D291B, f2 := 0x0A0B0A
+    color := PixelGetColor(x, y, "RGB")
+    if (color = f1 || color = f2)
+        return
+
+     Send "{Numpad4}"
+    MsgShow( GetRndMsg(3) )
+}
+
+SavasNarasiKontrol() {
+    static x := 930, y := 1096
+    static f1 := 0x3C2719, f2 := 0x050405
+    color := PixelGetColor(x, y, "RGB")
+    if (color = f1 || color = f2)
+        return
+
+    Send "{Numpad1}"
+    MsgShow( GetRndMsg(3) )
+}
+
+    GazapKontrol() {
+    static x := 1072, y := 1095
+    static f1 := 0x4A3D33, f2 := 0x2C2D2C
+    color := PixelGetColor(x, y, "RGB")
+    if (color = f1 || color = f2)
+        return
+
+    
+    Send "{Numpad2}"
+    MsgShow(GetRndMsg(3) )
+}
+
+TimerlerOpen() {
+    GazapKontrol()
+    SetTimer GazapKontrol , 1000
+    Sleep(Random(350, 450))
+    SavasNarasiKontrol()
+    SetTimer SavasNarasiKontrol , 1100
+    Sleep(Random(350, 450))
+    MeydanokuKontrol()
+    SetTimer MeydanokuKontrol , 1200
+    Sleep(Random(350, 450))
+    YürekNara()
+}
+
+TimerlerClose() {
+    SetTimer GazapKontrol , 0
+    SetTimer SavasNarasiKontrol , 0
+    SetTimer MeydanokuKontrol , 0
+    SetTimer YürekNara , 0
 }
